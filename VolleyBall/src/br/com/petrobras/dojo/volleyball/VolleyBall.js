@@ -46,7 +46,10 @@ Game.prototype.fireGameChanged = function(jogadas, i) {
 function VerificaRedeListener() {}
 function VerificaBolaNoChaoListener() {}
 function VerificaBolaForaListener() {}
-function VerificaNumeroToquesTimeListener() {}
+function VerificaNumeroToquesTimeListener() {
+	this.countTime1 = 0;
+	this.countTime2 = 0;
+}
 function VerificaDoisToquesListener() {}
 
 VerificaRedeListener.prototype.gameChanged = function(game, jogadas, i) {
@@ -85,11 +88,39 @@ VerificaBolaNoChaoListener.prototype.gameChanged = function(game, jogadas, i) {
 }
 
 VerificaBolaForaListener.prototype.gameChanged = function(game, jogadas, i) {
- 	alert("Verificando Bola Fora");
+	var isBolaFora = jogadas[i].indexOf("Fora") != -1;
+	if(isBolaFora) {
+		var origem = jogadas[i-1];
+		var nomeTime = extractTime(origem);
+		if(nomeTime == game.time1.nome) {
+			game.ganhador = game.time2;
+		}
+		if(nomeTime == game.time2.nome) {
+			game.ganhador = game.time1;
+		}
+	}
 }
 
 VerificaNumeroToquesTimeListener.prototype.gameChanged = function(game, jogadas, i) {
- 	alert("Verificando Numero de Toques dos times");
+	var nomeTime1 = game.time1.nome;
+	var nomeTime2 = game.time2.nome;
+	if(jogadas[i].indexOf(nomeTime1) != -1) {
+		this.countTime1++;
+		if(this.countTime1 > 3) {
+			game.ganhador = game.time2;
+		}
+	} else {
+		this.countTime1 = 0;
+	}
+	
+	if(jogadas[i].indexOf(nomeTime2) != -1) {
+		this.countTime2++;
+		if(this.countTime2 > 3) {
+			game.ganhador = game.time1;
+		}
+	} else {
+		this.countTime2 = 0;
+	}
 }
 
 VerificaDoisToquesListener.prototype.gameChanged = function(game, jogadas, i) {
@@ -107,9 +138,18 @@ VerificaDoisToquesListener.prototype.gameChanged = function(game, jogadas, i) {
 	}
 }
 
+
+function extractTimeQuadra(token) {
+	return token.substring("Quadra ".length);
+}
+
+function extractTime(jogador) {
+	return jogador.substring(0, jogador.length-2);
+}
+
 //main
 var game = new Game("ABC", "America");
-var ganhador = game.jogar(["ABC 1", "America 1", "Quadra ABC"]);
+var ganhador = game.jogar(["ABC 1", "America 1", "ABC 2", "ABC 3", "ABC 4", "ABC 2"]);
 
 if(ganhador != null) {
 	alert("Ponto para " + ganhador.nome);
@@ -117,81 +157,3 @@ if(ganhador != null) {
 	alert('Jogada incompleta');
 }
 //end;
-
-
-
-
-
-
-
-
-
-
-
-
-
-//var jogadas = ["ABC 1", "America 2", "Quadra America"];
-//var jogadas = ["ABC 1", "America 2", "America 3", "America 4", "America 5", "Quadra ABC", "ABC 3"];
-//verificaSaquePerdido("ABC", "America", jogadas);
-//verificaBolaNoChao("ABC", "America", jogadas);
-//verificaBolaFora("ABC", "America", jogadas);
-//verificaNumeroDeToquesDosTime("ABC", "America", jogadas);
-//verificaDoisToques("ABC", "America", jogadas);
-//alert('Fim de Jogo');
-
-
-function verificaNumeroDeToquesDosTime(time1, time2, jogadas) {
-	var countToques1 = 0;
-	var countToques2 = 0;
-	for(var i = 0; i<jogadas.length; i++) {
-		if(jogadas[i].indexOf(time1) != -1) {
-			countToques1++;
-			if(countToques1 > 3) {
-				alert('Ponto para ' + time2);
-			}
-		} else {
-			countToques1 = 0;
-		}
-		
-		if(jogadas[i].indexOf(time2) != -1) {
-			countToques2++;
-			if(countToques2 > 3) {
-				alert('Ponto para ' + time1);
-			}
-		} else {
-			countToques2 = 0;
-		}
-	}
-}
-
-function verificaBolaFora(time1, time2, jogadas) {
-	var i = findBolaForaIndex(jogadas);
-	if(i != -1) {//a bola caiu no chao em algum momento
-		var origem = jogadas[i-1];
-		var time = extractTime(origem);
-		if(time == time1) {
-			alert('Ponto para ' + time2);
-		}
-		if(time == time2) {
-			alert('Ponto para ' + time1);
-		}
-	}
-}
-
-function findBolaForaIndex(jogadas) {
-	for(var i = 0; i<jogadas.length; i++) {
-		if(jogadas[i].indexOf("Fora") != -1) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-function extractTimeQuadra(token) {
-	return token.substring("Quadra ".length);
-}
-
-function extractTime(jogador) {
-	
-	return jogador.substring(0, jogador.length-2);
-}
