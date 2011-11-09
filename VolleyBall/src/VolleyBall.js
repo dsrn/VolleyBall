@@ -148,12 +148,12 @@ function extractTime(jogador) {
 }
 
 //main
-var game = new Game("ABC", "America");
-var ganhador = game.jogar(["ABC 1", "America 1", "ABC 2", "ABC 3", "ABC 4", "ABC 2"]);
-
-if(ganhador != null) {
-	alert("Ponto para " + ganhador.nome);
-} else {
-	alert('Jogada incompleta');
-}
+//var game = new Game("ABC", "America");
+//var ganhador = game.jogar(["ABC 1", "America 1", "ABC 2", "ABC 3", "ABC 4", "ABC 2"]);
+//
+//if(ganhador != null) {
+//	alert("Ponto para " + ganhador.nome);
+//} else {
+//	alert('Jogada incompleta');
+//}
 //end;
